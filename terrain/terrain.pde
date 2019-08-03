@@ -28,7 +28,7 @@ float[][] terrain;
 float[][] distantTerrain;
 
 void setup() {
-  size(1920, 1080, P3D);
+  size(1280, 720, P3D);
   cols = (int)(w / scale);
   rows = (int)(h / scale);
 
@@ -37,8 +37,8 @@ void setup() {
   //    targetPos.x, targetPos.y + tarZOff, targetPos.z,
   //    0, 1, 0);
 
-  //frameRate(3);
-  smooth(2);
+  frameRate(10);
+  //smooth(2);
 
   terrain = new float[cols][rows];
 
