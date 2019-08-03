@@ -1,4 +1,8 @@
 import codeanticode.syphon.*;
+import peasy.*;
+import peasy.org.apache.commons.math.geometry.Vector3D;
+import peasy.org.apache.commons.math.geometry.Rotation;
+import peasy.org.apache.commons.math.geometry.RotationOrder;
 
 SyphonServer server;
 
@@ -10,35 +14,24 @@ int h = 1600;
 float heightThreshold = 0;
 int flySpeed = 1;
 
+PeasyCam cam;
+CameraState state;
 
-PVector cameraPos = new PVector(
-    width / 2.0 - w / 2, 
-    height / 2.0 - h / 2, 
-    (height / 2.0) / tan(PI * 30.0 / 180.0));
-PVector targetPos = new PVector(
-    width / 2.0 + w / 2, 
-    height / 2.0 + h / 2, 
-    0);
-float camZOff = 0;
-float tarZOff = 0;
 
 float flying = 0;
 
 float[][] terrain;
 float[][] distantTerrain;
 
+public void settings() {
+    size(1280, 720, P3D);
+}
+
 void setup() {
-  size(1280, 720, P3D);
   cols = (int)(w / scale);
   rows = (int)(h / scale);
 
-  //camera(
-  //    cameraPos.x, cameraPos.y + camZOff, cameraPos.z,
-  //    targetPos.x, targetPos.y + tarZOff, targetPos.z,
-  //    0, 1, 0);
-
   frameRate(10);
-  //smooth(2);
 
   terrain = new float[cols][rows];
 
@@ -51,30 +44,33 @@ void setup() {
   
   // Create syhpon server to send frames out.
   server = new SyphonServer(this, "Processing Syphon");
+  
+  cam = new PeasyCam(this, 400);
+  cam.setPitchRotationMode();
+  state = cam.getState();
 }
 
 void keyPressed() {
-  if (key == CODED) {
-    if (keyCode == UP) {
-      camZOff += 5;
-    } else if (keyCode == DOWN) {
-      camZOff -= 5;
-    } else if (keyCode == LEFT) {
-      tarZOff += 5;
-    //} else if (keyCode == RIGHT) {
-    //  tarZOff -= 5;
-    } else if (keyCode == RIGHT) {
-      flySpeed = 0;
-      println("flySpeed changed");
-    }
-  } else {
-    
-  }
 
-  //camera(
-  //    cameraPos.x, cameraPos.y + camZOff, cameraPos.z,
-  //    targetPos.x, targetPos.y + tarZOff, targetPos.z,
-  //    0, 1, 0);
+}
+
+public void keyReleased() {
+  if (key == '1') state = cam.getState();
+  if (key == '2') cam.setState(state, 1000);
+  if (key == '3') {
+    println(cam.getPosition());
+    println(cam.getDistance());
+    println(cam.getRotations());
+    println(cam.getWheelScale());
+  }
+  if (key == '4') {
+    CameraState cs = new CameraState(
+        new Rotation(RotationOrder.XYZ, -0.53, 0, 0),
+        new Vector3D(627.0, 624.8, 549.0),
+        93.3f);
+    cam.setState(cs);
+
+  }
 }
 
 void draw() {
