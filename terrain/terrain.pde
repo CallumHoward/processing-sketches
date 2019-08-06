@@ -5,6 +5,9 @@ import peasy.org.apache.commons.math.geometry.Rotation;
 import peasy.org.apache.commons.math.geometry.RotationOrder;
 
 SyphonServer server;
+PeasyCam cam;
+
+PImage sunImage;
 
 int rows;
 int cols;
@@ -14,7 +17,6 @@ int h = 1600;
 float heightThreshold = 0;
 int flySpeed = 1;
 
-PeasyCam cam;
 CameraState state;
 
 
@@ -33,6 +35,8 @@ void setup() {
 
   frameRate(10);
 
+  sunImage = loadImage("instagram-sun02.png");
+
   terrain = new float[cols][rows];
 
   distantTerrain = new float[cols][rows];
@@ -41,17 +45,18 @@ void setup() {
       distantTerrain[x][y] = map(noise(x/5.0f, y/5.0f), 0, 1, -100, 100);
     }
   }
-  
+
   // Create syhpon server to send frames out.
   server = new SyphonServer(this, "Processing Syphon");
-  
+
   cam = new PeasyCam(this, 400);
   cam.setPitchRotationMode();
-  state = cam.getState();
-}
 
-void keyPressed() {
-
+  CameraState cs = new CameraState(
+      new Rotation(RotationOrder.XYZ, -0.53, 0, 0),
+      new Vector3D(627.0, 624.8, 549.0),
+      93.3f);
+  cam.setState(cs);
 }
 
 public void keyReleased() {
@@ -69,7 +74,6 @@ public void keyReleased() {
         new Vector3D(627.0, 624.8, 549.0),
         93.3f);
     cam.setState(cs);
-
   }
 }
 
@@ -77,6 +81,7 @@ void draw() {
 
   flying -= 0.2 * flySpeed;
 
+  // generate terrain mesh
   float yoff = flying;
   for (int y = 0; y < rows; ++y) {
     float xoff = 0;
@@ -92,8 +97,25 @@ void draw() {
     yoff += 0.2;
   }
 
-  background(0);
+  background(0, 255, 0);
 
+  //// draw sun
+  //pushMatrix();
+  //noStroke();
+  //noFill();
+  //translate(width / 2, (height / 2), 0);
+
+  //beginShape();
+  //texture(sunImage);
+  //vertex(-100, -100, 0, 0, 0);
+  //vertex( 100, -100, 0, sunImage.width, 0);
+  //vertex( 100,  100, 0, sunImage.width, sunImage.height);
+  //vertex(-100,  100, 0, 0, sunImage.height);
+  //endShape();
+
+  //popMatrix();
+
+  // draw terrain
   translate(width / 2, height / 2);
   rotateX(PI / 3);
   translate(-w / 2, -h / 2);
@@ -121,6 +143,7 @@ void draw() {
     }
   }
 
+  // draw distant terrain
   translate(0, -h);
   for (int y = 0; y < rows - 1; ++y) {
     for (int x = 0; x < rows - 1; ++x) {
@@ -132,6 +155,8 @@ void draw() {
       endShape(CLOSE);
     }
   }
+
+  // send screen with Syphon
   server.sendScreen();
 }
 
