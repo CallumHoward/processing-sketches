@@ -9,7 +9,7 @@ const settings = {
 
 const sketch = () => {
   const palette = random.pick(palettes);
-  random.setSeed(1);
+  //random.setSeed(1);
 
   const createGrid = () => {
     const points = [];
@@ -19,7 +19,7 @@ const sketch = () => {
         const u = count <= 1 ? 0.5 : x / (count - 1);
         const v = count <= 1 ? 0.5 : y / (count - 1);
         points.push({
-          radius: Math.abs(0.01 + random.gaussian() * 0.01),
+          radius: Math.abs(0.01 + random.noise2D(u, v) * 0.05),
           position: [u, v],
           color: random.pick(palette),
         });
