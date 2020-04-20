@@ -5,11 +5,13 @@ const palettes = require("nice-color-palettes");
 
 const settings = {
   dimensions: [2048, 2048],
+  suffix: random.getSeed(),
 };
 
 const sketch = () => {
   const palette = random.pick(palettes);
-  //random.setSeed(1);
+  random.setSeed(random.getRandomSeed());
+  console.log("seed:", random.getSeed());
 
   const createGrid = () => {
     const points = [];
@@ -19,10 +21,10 @@ const sketch = () => {
         const u = count <= 1 ? 0.5 : x / (count - 1);
         const v = count <= 1 ? 0.5 : y / (count - 1);
         points.push({
-          radius: Math.abs(0.01 + random.noise2D(u, v) * 0.1),
+          radius: Math.abs(0.01 + random.noise2D(u, v) * 0.2),
           position: [u, v],
           color: random.pick(palette),
-          rotation: Math.abs(0.01 + random.noise2D(u, v)),
+          rotation: Math.abs(random.noise2D(u, v)),
         });
       }
     }
