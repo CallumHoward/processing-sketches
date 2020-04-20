@@ -5,6 +5,7 @@ global.THREE = require("three");
 require("three/examples/js/controls/OrbitControls");
 
 const canvasSketch = require("canvas-sketch");
+const random = require("canvas-sketch-util/random");
 
 const settings = {
   // Make the loop animated
@@ -25,30 +26,25 @@ const sketch = ({ context }) => {
   renderer.setClearColor("#000", 1);
 
   // Setup a camera
-  const camera = new THREE.OrthographicCamera(50, 1, 0.01, 100);
+  const camera = new THREE.OrthographicCamera();
 
   // Setup your scene
   const scene = new THREE.Scene();
 
-  // Setup a geometry
-  //const geometry = new THREE.SphereGeometry(1, 32, 16);
-  const geometry = new THREE.BoxGeometry(1, 1, 1);
-
-  // Setup a material
-  const material = new THREE.MeshBasicMaterial({
-    color: "red",
-    flatShading: true,
-  });
-
   // Setup a mesh with geometry + material
-  const mesh = new THREE.Mesh(geometry, material);
-  scene.add(mesh);
-
-  scene.add(new THREE.AmbientLight("#59314f"));
-
-  const light = new THREE.PointLight("45caf7");
-  light.position.set(2, 2, 10).multiplyScalar(1.5);
-  scene.add(light);
+  for (let i = 0; i < 20; i++) {
+    const mesh = new THREE.Mesh(
+      new THREE.BoxGeometry(1, 1, 1),
+      new THREE.MeshBasicMaterial({ color: "red" })
+    );
+    mesh.position.set(
+      random.range(-1, 1),
+      random.range(-1, 1),
+      random.range(-1, 1)
+    );
+    mesh.scale.multiplyScalar(0.1);
+    scene.add(mesh);
+  }
 
   // draw each frame
   return {
@@ -82,7 +78,6 @@ const sketch = ({ context }) => {
     },
     // Update & render your scene here
     render({ time }) {
-      mesh.rotation.y = time * 0.1;
       renderer.render(scene, camera);
     },
     // Dispose of events & renderer for cleaner hot-reloading
