@@ -16,20 +16,26 @@ const frag = glsl(/* glsl */ `
   uniform float aspect;  // Correct based on aspect ratio
   varying vec2 vUv;
 
+  #pragma glslify: noise = require('glsl-noise/simplex/3d');
+
   void main () {
-    vec3 colorA = sin(time) + vec3(1.0, 0.0, 0.0);
-    vec3 colorB = vec3(0.0, 0.5, 0.0);
+    //vec3 colorA = sin(time) + vec3(1.0, 0.0, 0.0);
+    //vec3 colorB = vec3(0.0, 0.5, 0.0);
 
-    // Change based on how far from the centre
-    vec2 center = vUv - 0.5; // same as vec2(0.5, 0.5);
-    center.x *= aspect;  // correct aspect ratio based on sketch size
-    float dist = length(center);
+    //// Change based on how far from the centre
+    //vec2 center = vUv - 0.5; // same as vec2(0.5, 0.5);
+    //center.x *= aspect;  // correct aspect ratio based on sketch size
+    //float dist = length(center);
 
-    float alpha = smoothstep(0.251, 0.25, dist);
+    //float alpha = smoothstep(0.251, 0.25, dist);
 
-    // Mix from A to B based on uv coords
-    vec3 color = mix(colorA, colorB, vUv.y + vUv.x * sin(time));
-    gl_FragColor = vec4(color, alpha);
+    //// Mix from A to B based on uv coords
+    //vec3 color = mix(colorA, colorB, vUv.y + vUv.x * sin(time));
+    //gl_FragColor = vec4(color, alpha);
+
+    float n = noise(vec3(vUv.xy, time));
+
+    gl_FragColor = vec4(vec3(n), 1.0);
   }
 `);
 
