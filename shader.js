@@ -17,8 +17,8 @@ const frag = glsl(/* glsl */ `
   varying vec2 vUv;
 
   void main () {
-    vec3 colorA = vec3(1.0, 0.0, 0.0);
-    vec3 colorB = vec3(0.0, 1.0, 0.0);
+    vec3 colorA = sin(time) + vec3(1.0, 0.0, 0.0);
+    vec3 colorB = vec3(0.0, 0.5, 0.0);
 
     // Change based on how far from the centre
     vec2 center = vUv - 0.5; // same as vec2(0.5, 0.5);
@@ -28,7 +28,7 @@ const frag = glsl(/* glsl */ `
     float alpha = smoothstep(0.251, 0.25, dist);
 
     // Mix from A to B based on uv coords
-    vec3 color = mix(colorA, colorB, vUv.x);
+    vec3 color = mix(colorA, colorB, vUv.y + vUv.x * sin(time));
     gl_FragColor = vec4(color, alpha);
   }
 `);
