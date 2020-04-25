@@ -25,9 +25,11 @@ const frag = glsl(/* glsl */ `
     center.x *= aspect;  // correct aspect ratio based on sketch size
     float dist = length(center);
 
+    float alpha = smoothstep(0.251, 0.25, dist);
+
     // Mix from A to B based on uv coords
     vec3 color = mix(colorA, colorB, vUv.x);
-    gl_FragColor = vec4(color, dist > 0.25 ? 0.0 : 1.0);
+    gl_FragColor = vec4(color, alpha);
   }
 `);
 
