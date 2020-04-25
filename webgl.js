@@ -33,15 +33,19 @@ const sketch = ({ context }) => {
   // Setup your scene
   const scene = new THREE.Scene();
 
-  const fragmentShader = `
+  const fragmentShader = glslify(`
     varying vec2 vUv;
 
+    #pragma glslify: noise = require("glsl-noise/simplex/3d");
+
     uniform vec3 color;
+    uniform float time;
 
     void main() {
-      gl_FragColor = vec4((color * vUv.x), 1.0);
+      float offset = 0.3 * noise(vec3(vUv.xy, time));
+      gl_FragColor = vec4((color * vUv.x + offset), 1.0);
     }
-  `;
+  `);
 
   const vertexShader = glslify(`
     varying vec2 vUv;
@@ -53,12 +57,13 @@ const sketch = ({ context }) => {
     void main() {
       vUv = uv;
       vec3 pos = position.xyz;
-      pos += noise(vec4(position.xyz, time));
+      pos += 0.05 * normal * noise(vec4(position.xyz * 10.0, time));
+      pos += 0.25 * normal * noise(vec4(position.xyz * 1.0, time));
       gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
     }
   `);
 
-  const geometry = new THREE.BoxGeometry(1, 1, 1);
+  const geometry = new THREE.SphereGeometry(1, 32, 32);
   const palette = random.pick(palettes);
   const meshes = [];
   // Setup a mesh with geometry + material
@@ -97,7 +102,7 @@ const sketch = ({ context }) => {
   directionalLight2.position.set(4, 4, 0);
   scene.add(directionalLight2);
 
-  scene.add(new THREE.AmbientLight("hsl(0, 0, 40%)"));
+  scene.add(new THREE.AmbientLight("hsl(0, 0%, 95%)"));
 
   // draw each frame
   return {
