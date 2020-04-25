@@ -99,22 +99,6 @@ void draw() {
 
   background(0, 255, 0);
 
-  //// draw sun
-  //pushMatrix();
-  //noStroke();
-  //noFill();
-  //translate(width / 2, (height / 2), 0);
-
-  //beginShape();
-  //texture(sunImage);
-  //vertex(-100, -100, 0, 0, 0);
-  //vertex( 100, -100, 0, sunImage.width, 0);
-  //vertex( 100,  100, 0, sunImage.width, sunImage.height);
-  //vertex(-100,  100, 0, 0, sunImage.height);
-  //endShape();
-
-  //popMatrix();
-
   // draw terrain
   translate(width / 2, height / 2);
   rotateX(PI / 3);
