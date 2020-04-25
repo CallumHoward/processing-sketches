@@ -24,7 +24,7 @@ const sketch = ({ context }) => {
   });
 
   // WebGL background color
-  renderer.setClearColor("#000", 1);
+  renderer.setClearColor("#FFF", 1);
 
   // Setup a camera
   const camera = new THREE.OrthographicCamera();
@@ -32,15 +32,43 @@ const sketch = ({ context }) => {
   // Setup your scene
   const scene = new THREE.Scene();
 
+  const fragmentShader = `
+    varying vec2 vUv;
+
+    uniform vec3 color;
+
+    void main() {
+      gl_FragColor = vec4((color * vUv.x), 1.0);
+    }
+  `;
+
+  const vertexShader = `
+    varying vec2 vUv;
+
+    uniform float time;
+
+    void main() {
+      vUv = uv;
+      vec3 pos = position.xyz * sin(time);
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+    }
+  `;
+
   const geometry = new THREE.BoxGeometry(1, 1, 1);
-
   const palette = random.pick(palettes);
-
+  const meshes = [];
   // Setup a mesh with geometry + material
   for (let i = 0; i < 20; i++) {
     const mesh = new THREE.Mesh(
       geometry,
-      new THREE.MeshStandardMaterial({ color: random.pick(palette) })
+      new THREE.ShaderMaterial({
+        fragmentShader,
+        vertexShader,
+        uniforms: {
+          color: { value: new THREE.Color(random.pick(palette)) },
+          time: { value: 0 },
+        },
+      })
     );
     mesh.position.set(
       random.range(-1, 1),
@@ -54,6 +82,7 @@ const sketch = ({ context }) => {
     );
     mesh.scale.multiplyScalar(0.5);
     scene.add(mesh);
+    meshes.push(mesh);
   }
 
   const directionalLight = new THREE.DirectionalLight("white", 1);
@@ -98,6 +127,10 @@ const sketch = ({ context }) => {
     },
     // Update & render your scene here
     render({ time }) {
+      meshes.forEach((mesh) => {
+        mesh.material.uniforms.time.value = time;
+      });
+
       renderer.render(scene, camera);
     },
     // Dispose of events & renderer for cleaner hot-reloading
